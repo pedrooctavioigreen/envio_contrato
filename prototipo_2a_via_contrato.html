@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BackOffice iGreen — Protótipo 2ª Via Contrato</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #22c55e;
+    --green-dark: #16a34a;
+    --green-light: #dcfce7;
+    --green-mid: #bbf7d0;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+    --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+    --radius: 8px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f2f5;
+    color: var(--gray-700);
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--gray-500);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .topnav .sep { color: var(--gray-300); }
+  .topnav a { color: var(--green-dark); text-decoration: none; font-weight: 500; }
+  .topnav a:hover { text-decoration: underline; }
+  .topnav .current { color: var(--green); font-weight: 600; }
+
+  /* ── TAB BAR ── */
+  .tabbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 14px 18px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--gray-700); }
+  .tab.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 18px;
+  }
+
+  /* ── FORM FIELDS ── */
+  .field {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    position: relative;
+    background: var(--white);
+    transition: border-color .15s;
+  }
+  .field:hover { border-color: var(--gray-300); }
+  .field label {
+    display: block;
+    font-size: 10.5px;
+    color: var(--gray-400);
+    margin-bottom: 3px;
+    font-weight: 500;
+  }
+  .field .value {
+    font-size: 12.5px;
+    color: var(--gray-700);
+    word-break: break-all;
+    line-height: 1.4;
+  }
+  .field .value.placeholder { color: var(--gray-300); }
+  .field .copy-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    padding: 4px;
+    border-radius: 4px;
+    transition: color .15s, background .15s;
+  }
+  .field .copy-btn:hover { color: var(--green); background: var(--green-light); }
+
+  /* ── RIGHT COLUMN ── */
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── STATUS CARD ── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--gray-500);
+    padding: 6px 0;
+  }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    flex-shrink: 0;
+  }
+  .status-dot.ativo { background: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+  .status-dot.pendente { background: var(--gray-400); }
+
+  /* ── HISTORICO STATUS ── */
+  .historico-box {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    min-height: 120px;
+    max-height: 160px;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .historico-empty {
+    color: var(--gray-400);
+    font-size: 12px;
+    text-align: center;
+    padding: 20px;
+  }
+  .historico-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 11.5px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    width: 100%;
+  }
+  .historico-item:last-child { border-bottom: none; }
+  .historico-item .hi-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .hi-wp { background: #dcfce7; }
+  .hi-email { background: #dbeafe; }
+  .hi-view { background: #fef9c3; }
+  .historico-item .hi-text { flex: 1; }
+  .historico-item .hi-label { font-weight: 600; color: var(--gray-700); margin-bottom: 2px; }
+  .historico-item .hi-meta { color: var(--gray-400); font-size: 10.5px; }
+
+  /* ── NEW SECTION: CONTRATO ASSINADO ── */
+  .contrato-assinado-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1.5px solid var(--green-mid);
+    animation: slideIn .35s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .ca-header {
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-bottom: 1px solid var(--green-mid);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ca-header-icon {
+    width: 32px; height: 32px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .ca-header-text .ca-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .ca-header-text .ca-sub {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 1px;
+  }
+  .ca-body { padding: 16px 20px; }
+
+  .ca-file-info {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ca-file-icon { font-size: 22px; flex-shrink: 0; }
+  .ca-file-text .ca-file-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+  .ca-file-text .ca-file-meta {
+    font-size: 10.5px;
+    color: var(--gray-400);
+    margin-top: 1px;
+  }
+
+  .ca-actions-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 10px;
+  }
+  .ca-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .ca-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--gray-200);
+    background: var(--white);
+    cursor: pointer;
+    transition: all .18s ease;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  .ca-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity .18s;
+  }
+  .ca-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .ca-btn:active { transform: translateY(0); }
+
+  .ca-btn.btn-view {
+    border-color: #e0f2fe;
+    color: #0284c7;
+  }
+  .ca-btn.btn-view:hover { background: #f0f9ff; border-color: #7dd3fc; }
+
+  .ca-btn.btn-whats {
+    border-color: #dcfce7;
+    color: #16a34a;
+  }
+  .ca-btn.btn-whats:hover { background: #f0fdf4; border-color: var(--green); }
+
+  .ca-btn.btn-email {
+    border-color: #ede9fe;
+    color: #7c3aed;
+  }
+  .ca-btn.btn-email:hover { background: #faf5ff; border-color: #c4b5fd; }
+
+  .ca-btn .btn-icon { font-size: 20px; }
+  .ca-btn .btn-label {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    color: var(--gray-700);
+  }
+  .ca-btn .btn-sub {
+    font-size: 9.5px;
+    color: var(--gray-400);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  /* ── FOOTER BUTTONS ── */
+  .footer-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 16px;
+    margin-top: 4px;
+    border-top: 1px solid var(--gray-100);
+  }
+  .btn-cancel {
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-cancel:hover { background: var(--gray-50); }
+  .btn-save {
+    padding: 9px 22px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--green);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+  }
+  .btn-save:hover { background: var(--green-dark); }
+  .btn-save:active { transform: scale(.98); }
+
+  /* ── TOAST ── */
+  .toast-container {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .toast {
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    animation: toastIn .3s ease, toastOut .3s ease 2.5s forwards;
+    min-width: 260px;
+    max-width: 380px;
+    pointer-events: auto;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes toastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(20px); }
+  }
+  .toast.success { background: #166534; border-left: 4px solid var(--green); }
+  .toast.info    { background: #1e3a5f; border-left: 4px solid #60a5fa; }
+  .toast.warning { background: #713f12; border-left: 4px solid #fbbf24; }
+  .toast-icon { font-size: 16px; flex-shrink: 0; }
+  .toast-msg { line-height: 1.4; }
+  .toast-msg strong { display: block; }
+  .toast-msg small  { opacity: .7; font-size: 11px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    padding: 32px;
+    max-width: 460px;
+    width: 90%;
+    animation: modalIn .25s ease;
+    position: relative;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.93) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-icon { font-size: 42px; text-align: center; margin-bottom: 14px; }
+  .modal-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gray-900);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .modal-desc {
+    font-size: 13px;
+    color: var(--gray-500);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .modal-info-box {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 12.5px;
+  }
+  .modal-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .modal-info-row:last-child { border-bottom: none; }
+  .modal-info-row .mkey { color: var(--gray-500); font-weight: 500; }
+  .modal-info-row .mval { color: var(--gray-800); font-weight: 600; text-align: right; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-btn-cancel {
+    flex: 1;
+    padding: 11px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .modal-btn-cancel:hover { background: var(--gray-50); }
+  .modal-btn-confirm {
+    flex: 2;
+    padding: 11px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    transition: filter .15s, transform .1s;
+  }
+  .modal-btn-confirm:hover { filter: brightness(1.1); }
+  .modal-btn-confirm:active { transform: scale(.98); }
+  .confirm-wp     { background: #16a34a; }
+  .confirm-email  { background: #7c3aed; }
+
+  /* ── PDF VIEWER ── */
+  .pdf-viewer {
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+  .pdf-mock {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    padding: 40px 30px;
+    margin: 0 auto 16px;
+    max-width: 320px;
+    text-align: left;
+  }
+  .pdf-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .pdf-logo { width: 36px; height: 36px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pdf-brand { font-size: 15px; font-weight: 700; color: var(--green-dark); }
+  .pdf-line { height: 8px; background: var(--gray-100); border-radius: 4px; margin-bottom: 8px; }
+  .pdf-line.short { width: 60%; }
+  .pdf-line.medium { width: 80%; }
+  .pdf-sig-area { margin-top: 24px; border-top: 1px solid var(--gray-200); padding-top: 16px; display: flex; gap: 20px; }
+  .pdf-sig { flex: 1; }
+  .pdf-sig-line { height: 1px; background: var(--gray-300); margin-bottom: 4px; }
+  .pdf-sig-label { font-size: 10px; color: var(--gray-400); text-align: center; }
+  .pdf-download-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    background: var(--green);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pdf-download-btn:hover { background: var(--green-dark); }
+
+  /* ── DEMO BANNER ── */
+  .demo-banner {
+    background: linear-gradient(135deg, #1a4d2e 0%, #2d7a3a 100%);
+    color: var(--white);
+    padding: 10px 24px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    letter-spacing: .02em;
+  }
+  .demo-banner strong { font-weight: 700; }
+  .demo-tag {
+    background: rgba(255,255,255,.2);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  /* ── TOGGLE for status demo ── */
+  .demo-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px dashed var(--gray-300);
+    background: var(--gray-50);
+    transition: background .15s;
+    user-select: none;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  .demo-toggle:hover { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+  .toggle-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-300); transition: background .2s; }
+  .toggle-dot.on { background: var(--green); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Demo banner -->
+<div class="demo-banner">
+  <span class="demo-tag">Protótipo</span>
+  <span>BackOffice iGreen — <strong>Funcionalidade: Envio da 2ª Via do Contrato Assinado</strong></span>
+</div>
+
+<!-- Top nav -->
+<div class="topnav">
+  <span>Inicio</span>
+  <span class="sep">/</span>
+  <a href="#">Clientes Green</a>
+  <span class="sep">/</span>
+  <a href="#">1472084</a>
+  <span class="sep">/</span>
+  <span class="current">Editar</span>
+</div>
+
+<!-- Tab bar -->
+<div class="tabbar">
+  <div class="tab" onclick="switchTab(this)">Pessoa Jurídica</div>
+  <div class="tab" onclick="switchTab(this)">Dados Telecom</div>
+  <div class="tab" onclick="switchTab(this)">Bônus Telecom</div>
+  <div class="tab" onclick="switchTab(this)">Conta Energia</div>
+  <div class="tab active" onclick="switchTab(this)">Contrato</div>
+  <div class="tab" onclick="switchTab(this)">Devolutivas</div>
+  <div class="tab" onclick="switchTab(this)">Assinaturas</div>
+  <div class="tab" onclick="switchTab(this)">Documentos</div>
+  <div class="tab" onclick="switchTab(this)">Histórico de Alterações</div>
+  <div class="tab" onclick="switchTab(this)">Jornada</div>
+  <div class="tab" onclick="switchTab(this)">CashBack</div>
+</div>
+
+<!-- Main content -->
+<div class="main">
+
+  <!-- LEFT: Informações do contrato -->
+  <div>
+    <div class="card">
+      <div class="card-title">Informações do contrato</div>
+
+      <div class="field">
+        <label>Chave Contrato *</label>
+        <div class="value placeholder">—</div>
+      </div>
+      <div class="field">
+        <label>Chave assinatura cliente *</label>
+        <div class="value">x3HjzsqOVKEnGNuJiQR0OkjbiiBq1VHXE2FrJGQufkVeuSXt9qozOCuSV1kXi5-z7Fa…</div>
+      </div>
+      <div class="field">
+        <label>Chave solatio *</label>
+        <div class="value placeholder">—</div>
+      </div>
+      <div class="field">
+        <label>Data ativo *</label>
+        <div class="value">20/05/2026</div>
+      </div>
+      <div class="field">
+        <label>Quantidade assinaturas *</label>
+        <div class="value placeholder">—</div>
+      </div>
+      <div class="field">
+        <label>Status *</label>
+        <div class="value placeholder">—</div>
+      </div>
+      <div class="field">
+        <label>Desconto cliente *</label>
+        <div class="value">8</div>
+      </div>
+      <div class="field">
+        <label>Caminho Arquivo</label>
+        <div class="value" style="color:#2563eb;font-size:11.5px">https://documentosigreen.s3.sa-east-1.amazonaws.com/1472084-contaenergia.p…</div>
+        <button class="copy-btn" onclick="copyToast('Caminho copiado!')">📋</button>
+      </div>
+      <div class="field">
+        <label>Link Cashback</label>
+        <div class="value" style="color:#2563eb;font-size:11.5px">https://conexao.igreenenergy.com.br/?id=1131296&cli=1472084</div>
+        <button class="copy-btn" onclick="copyToast('Link copiado!')">📋</button>
+      </div>
+      <div class="field">
+        <label>Link Assinatura</label>
+        <div class="value" style="color:#2563eb;font-size:11.5px">https://green.igreenenergy.com.br/assinatura/1472084?id=113129</div>
+        <button class="copy-btn" onclick="copyToast('Link copiado!')">📋</button>
+      </div>
+
+      <div class="footer-bar">
+        <button class="btn-cancel">Cancelar</button>
+        <button class="btn-save">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Status + Histórico + Contrato Assinado -->
+  <div class="right-col">
+
+    <!-- Status do Contrato -->
+    <div class="card">
+      <div class="card-title">Status do Contrato</div>
+      <div class="status-badge">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">PENDENTE</span>
+      </div>
+      <!-- Demo toggle -->
+      <div class="demo-toggle" onclick="toggleStatus()" title="Clique para alternar o status e ver a seção aparecer">
+        <div class="toggle-dot" id="toggleDot"></div>
+        <span id="toggleLabel">⚡ Simular: mudar para status <strong>Ativo</strong> e ver a nova seção</span>
+      </div>
+    </div>
+
+    <!-- Histórico de Status -->
+    <div class="card">
+      <div class="card-title">Histórico de Status</div>
+      <div class="historico-box" id="historicoStatus">
+        <div class="historico-empty">Nenhum registro encontrado</div>
+      </div>
+    </div>
+
+    <!-- NOVA SEÇÃO: Contrato Assinado (oculta até status ativo) -->
+    <div id="contratoAssinadoSection" style="display:none">
+      <div class="contrato-assinado-card">
+        <div class="ca-header">
+          <div class="ca-header-icon">📄</div>
+          <div class="ca-header-text">
+            <div class="ca-title">Contrato Assinado</div>
+            <div class="ca-sub">Visualize ou envie a 2ª via ao cliente</div>
+          </div>
+        </div>
+        <div class="ca-body">
+          <div class="ca-file-info">
+            <div class="ca-file-icon">📑</div>
+            <div class="ca-file-text">
+              <div class="ca-file-name">Contrato_1472084_assinado.pdf</div>
+              <div class="ca-file-meta">Assinado em 20/05/2026 · 2 assinaturas · 1,2 MB</div>
+            </div>
+          </div>
+          <div class="ca-actions-label">Ações disponíveis</div>
+          <div class="ca-actions">
+            <button class="ca-btn btn-view" onclick="handleVisualizar()">
+              <span class="btn-icon">👁️</span>
+              <span class="btn-label">Visualizar</span>
+              <span class="btn-sub">Abrir PDF</span>
+            </button>
+            <button class="ca-btn btn-whats" onclick="handleWhatsApp()">
+              <span class="btn-icon">💬</span>
+              <span class="btn-label">Enviar via WhatsApp</span>
+              <span class="btn-sub">(11) 99999-0000</span>
+            </button>
+            <button class="ca-btn btn-email" onclick="handleEmail()">
+              <span class="btn-icon">✉️</span>
+              <span class="btn-label">Enviar via E-mail</span>
+              <span class="btn-sub">cliente@email.com</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal WhatsApp -->
+<div class="modal-overlay" id="modalWp" style="display:none" onclick="closeModal('modalWp', event)">
+  <div class="modal">
+    <div class="modal-icon">💬</div>
+    <div class="modal-title">Enviar via WhatsApp</div>
+    <div class="modal-desc">O contrato assinado será enviado para o número cadastrado do cliente.</div>
+    <div class="modal-info-box">
+      <div class="modal-info-row">
+        <span class="mkey">Cliente</span>
+        <span class="mval">João Silva — 1472084</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="mkey">WhatsApp</span>
+        <span class="mval">(11) 99999-0000</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="mkey">Arquivo</span>
+        <span class="mval">Contrato_1472084_assinado.pdf</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeModal('modalWp')">Cancelar</button>
+      <button class="modal-btn-confirm confirm-wp" onclick="confirmSend('whatsapp')">✓ Confirmar envio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal E-mail -->
+<div class="modal-overlay" id="modalEmail" style="display:none" onclick="closeModal('modalEmail', event)">
+  <div class="modal">
+    <div class="modal-icon">✉️</div>
+    <div class="modal-title">Enviar via E-mail</div>
+    <div class="modal-desc">O contrato assinado será enviado para o e-mail cadastrado do cliente.</div>
+    <div class="modal-info-box">
+      <div class="modal-info-row">
+        <span class="mkey">Cliente</span>
+        <span class="mval">João Silva — 1472084</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="mkey">E-mail</span>
+        <span class="mval">joao.silva@email.com</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="mkey">Arquivo</span>
+        <span class="mval">Contrato_1472084_assinado.pdf</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" onclick="closeModal('modalEmail')">Cancelar</button>
+      <button class="modal-btn-confirm confirm-email" onclick="confirmSend('email')">✓ Confirmar envio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Visualizar -->
+<div class="modal-overlay" id="modalView" style="display:none" onclick="closeModal('modalView', event)">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title" style="margin-bottom:16px">📄 Contrato_1472084_assinado.pdf</div>
+    <div class="pdf-viewer">
+      <div class="pdf-mock">
+        <div class="pdf-header">
+          <div class="pdf-logo">🌿</div>
+          <div>
+            <div class="pdf-brand">iGreen Energia</div>
+            <div style="font-size:10px;color:#9ca3af">Contrato de Fornecimento de Energia</div>
+          </div>
+        </div>
+        <div class="pdf-line"></div>
+        <div class="pdf-line short"></div>
+        <div class="pdf-line medium"></div>
+        <div class="pdf-line short"></div>
+        <div class="pdf-line"></div>
+        <div class="pdf-line medium"></div>
+        <div class="pdf-line short"></div>
+        <div style="margin:16px 0 8px;font-size:10px;color:#9ca3af;font-weight:600;">IDENTIFICAÇÃO DO CLIENTE</div>
+        <div class="pdf-line short"></div>
+        <div class="pdf-line medium"></div>
+        <div class="pdf-line short"></div>
+        <div class="pdf-sig-area">
+          <div class="pdf-sig">
+            <div class="pdf-sig-line"></div>
+            <div class="pdf-sig-label">Cliente</div>
+          </div>
+          <div class="pdf-sig">
+            <div class="pdf-sig-line"></div>
+            <div class="pdf-sig-label">iGreen Energia</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:9px;color:#9ca3af">Assinado digitalmente · 20/05/2026</div>
+      </div>
+      <button class="pdf-download-btn" onclick="closeModal('modalView');showToast('⬇️','Download iniciado','Contrato_1472084_assinado.pdf','info')">
+        ⬇️ Baixar PDF
+      </button>
+    </div>
+    <div style="margin-top:16px;text-align:center">
+      <button class="modal-btn-cancel" style="width:100%;padding:11px" onclick="closeModal('modalView')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── STATE ──
+  let isAtivo = false;
+  let historicoEnvios = [];
+
+  // ── TABS ──
+  function switchTab(el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    if (el.textContent.trim() === 'Histórico de Alterações') {
+      showHistoricoAlteracoes();
+    }
+  }
+
+  // ── STATUS TOGGLE ──
+  function toggleStatus() {
+    isAtivo = !isAtivo;
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    const tdot = document.getElementById('toggleDot');
+    const tlabel = document.getElementById('toggleLabel');
+    const section = document.getElementById('contratoAssinadoSection');
+
+    if (isAtivo) {
+      dot.className = 'status-dot ativo';
+      txt.textContent = 'ATIVO';
+      tdot.classList.add('on');
+      tlabel.innerHTML = '⚡ Simular: voltar para status <strong>Pendente</strong>';
+      section.style.display = 'block';
+      section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      showToast('✅', 'Status atualizado', 'A seção "Contrato Assinado" agora está visível', 'success');
+    } else {
+      dot.className = 'status-dot pendente';
+      txt.textContent = 'PENDENTE';
+      tdot.classList.remove('on');
+      tlabel.innerHTML = '⚡ Simular: mudar para status <strong>Ativo</strong> e ver a nova seção';
+      section.style.display = 'none';
+      showToast('ℹ️', 'Status atualizado', 'Seção "Contrato Assinado" ocultada (contrato pendente)', 'info');
+    }
+  }
+
+  // ── ACTIONS ──
+  function handleVisualizar() {
+    document.getElementById('modalView').style.display = 'flex';
+    addHistorico('view', '👁️', 'Contrato visualizado', 'Operador abriu o PDF do contrato');
+  }
+
+  function handleWhatsApp() {
+    document.getElementById('modalWp').style.display = 'flex';
+  }
+
+  function handleEmail() {
+    document.getElementById('modalEmail').style.display = 'flex';
+  }
+
+  function confirmSend(type) {
+    if (type === 'whatsapp') {
+      closeModal('modalWp');
+      addHistorico('wp', '💬', '2ª via enviada via WhatsApp', '(11) 99999-0000');
+      simulateSending(() => {
+        showToast('💬', 'Enviado via WhatsApp!', 'Contrato enviado para (11) 99999-0000', 'success');
+      });
+    } else {
+      closeModal('modalEmail');
+      addHistorico('email', '✉️', '2ª via enviada via E-mail', 'joao.silva@email.com');
+      simulateSending(() => {
+        showToast('✉️', 'Enviado via E-mail!', 'Contrato enviado para joao.silva@email.com', 'success');
+      });
+    }
+  }
+
+  function simulateSending(cb) {
+    showToast('⏳', 'Enviando...', 'Aguarde um instante', 'info');
+    setTimeout(cb, 1200);
+  }
+
+  // ── HISTORICO ──
+  function addHistorico(type, icon, label, meta) {
+    const now = new Date();
+    const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const date = now.toLocaleDateString('pt-BR');
+    historicoEnvios.unshift({ type, icon, label, meta, time, date, op: 'Pedro Octávio' });
+    updateHistoricoStatus();
+  }
+
+  function updateHistoricoStatus() {
+    const box = document.getElementById('historicoStatus');
+    if (historicoEnvios.length === 0) {
+      box.innerHTML = '<div class="historico-empty">Nenhum registro encontrado</div>';
+      box.style.alignItems = 'center';
+      box.style.justifyContent = 'center';
+      return;
+    }
+    box.style.alignItems = 'flex-start';
+    box.style.justifyContent = 'flex-start';
+    box.innerHTML = historicoEnvios.map(e => `
+      <div class="historico-item">
+        <div class="hi-icon ${e.type === 'wp' ? 'hi-wp' : e.type === 'email' ? 'hi-email' : 'hi-view'}">${e.icon}</div>
+        <div class="hi-text">
+          <div class="hi-label">${e.label}</div>
+          <div class="hi-meta">${e.meta} · ${e.date} ${e.time} · ${e.op}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function showHistoricoAlteracoes() {
+    if (historicoEnvios.length === 0) return;
+    showToast('📋', 'Histórico de Alterações', `${historicoEnvios.length} envio(s) registrado(s) nesta sessão`, 'info');
+  }
+
+  // ── MODALS ──
+  function closeModal(id, event) {
+    if (event && event.target !== event.currentTarget) return;
+    document.getElementById(id).style.display = 'none';
+  }
+
+  // ── TOAST ──
+  function showToast(icon, title, msg, type) {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span class="toast-icon">${icon}</span><div class="toast-msg"><strong>${title}</strong><small>${msg}</small></div>`;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 2900);
+  }
+
+  function copyToast(msg) {
+    showToast('📋', msg, 'Conteúdo copiado para a área de transferência', 'info');
+  }
+
+  // ── ESC to close ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      ['modalWp', 'modalEmail', 'modalView'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+    }
+  });
+</script>
+</body>
+</html>
